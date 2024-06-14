@@ -1,11 +1,12 @@
 import { v2 as cloudinary } from "cloudinary";
 import  fs from 'fs'
+import { ApiError } from "./ApiError.js";
 
 cloudinary.config({
 
-    cloud_name,
-    api_key,
-    api_secret
+    cloud_name : process.env.CLOUDINARY_CLOUD_NAME ,
+    api_key : process.env.CLOUDINARY_API_KEY ,
+    api_secret :  process.env.CLOUDINARY_API_SECRET
 
 })
 
@@ -34,7 +35,34 @@ const uploadOnCloudinary = async(fileLocalPath) => {
 
 }
 
-export  { uploadOnCloudinary }
+const deleteImageFromCloudinary = async (imageUrl) => {
+
+    try {
+
+        if(imageUrl.trim() === '' ) {
+
+            throw new ApiError(401, " invalid image url ")
+
+        }
+
+        const publicId = imageUrl.split('/').pop().split('.')[0] ;
+        await cloudinary.uploader.destroy(publicId)
+
+        
+    } 
+    
+    catch (error) {
+
+        throw new ApiError(401, " error in delete image from cloudinary ")
+        
+    }
+
+
+}
+
+
+
+export  { uploadOnCloudinary,deleteImageFromCloudinary }
 
 
 // (async function() {
